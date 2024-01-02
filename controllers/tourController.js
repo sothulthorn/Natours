@@ -1,5 +1,12 @@
 const Tour = require('../models/tourModel');
 
+exports.aliasTopTour = (req, res, next) => {
+  req.query.limit = '5';
+  req.query.sort = '-ratingsAverage,price';
+  req.query.fields = 'name,price,ratingAverage,summary,difficulty';
+  next();
+};
+
 exports.getAllTours = async (req, res) => {
   try {
     // BUILD QUERY
@@ -42,6 +49,8 @@ exports.getAllTours = async (req, res) => {
       const numberOfTours = await Tour.countDocuments();
       if (skip >= numberOfTours) throw new Error('This page does not exist');
     }
+
+    // 5) Alias
 
     // EXECUTE QUERY
     const tours = await query;
@@ -136,11 +145,3 @@ exports.deleteTour = async (req, res) => {
     });
   }
 };
-
-// { difficulty: 'easy', duration: {$gte: 5}}
-
-// const tours = await Tour.find()
-//   .where('duration')
-//   .equals(5)
-//   .where('difficulty')
-//   .equals('easy');
